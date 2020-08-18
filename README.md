@@ -4,13 +4,17 @@
 
 1. Make sure packages from /usr/local/lib/R/site-library are not used.
 
-2. Make sure BiocBBSpack is not part of the binaries distributed. 
+2. Make sure BiocBBSpack is not part of the binaries distributed.
 
 ## TODO
 
-1. Update image to R 4.0.2 
+1. Update image to R 4.0.2
 
 2. Test binary package creation and blob storage on Azure.
+
+	1. Test Automated binary package creation on Google Bucket or Azure.
+
+	2. Check Cloud Scheduler for Automated
 
 ## Steps to create binaries
 
@@ -22,8 +26,8 @@ for the following:
 
 ```
 > sapply(.libPaths(), function(x) length(dir(x)))
-       /home/rstudio/packages /usr/local/lib/R/site-library      /usr/local/lib/R/library 
-                            0                           237                            30 
+	   /home/rstudio/packages /usr/local/lib/R/site-library      /usr/local/lib/R/library
+							0                           237                            30
 > existing_packages <- dir(.libPaths()[2])
 ```
 
@@ -42,8 +46,8 @@ Delete all packages in `.libPaths()[2]`.
 > unlink("/usr/local/lib/R/site-library/", recursive = TRUE)
 
 > sapply(.libPaths(), function(x) length(dir(x)))
-       /home/rstudio/packages /usr/local/lib/R/site-library      /usr/local/lib/R/library 
-                            0                             0                            30 
+	   /home/rstudio/packages /usr/local/lib/R/site-library      /usr/local/lib/R/library
+							0                             0                            30
 ```
 
 ### Step 3: Install BiocManager
@@ -96,7 +100,7 @@ because it runs on R 4.0.0. This image needs to be udpated.
 ### Step 8: Get manifest and reinstall all packages
 
 Make sure to reinstall packages which we deleted in Step 2 from
-`/usr/local/lib/R/site-library`. 
+`/usr/local/lib/R/site-library`.
 
 ```
 pl = BiocBBSpack::get_bioc_packagelist("master")
@@ -108,7 +112,7 @@ BiocManager::install(pl, force=TRUE)
 
 ### Step 9: View packages in /home/rstudio/packages
 
-Create a new location for binary packages. 
+Create a new location for binary packages.
 
 ```
 .libPaths()[1]
@@ -148,7 +152,7 @@ file.rename("/home/rstudio/packages/PACKAGES.gz", "/home/rstudio/binaries/PACKAG
 Authenticate with Google Cloud on RStudio terminal
 
 ```
-## Follow instructions after this command and verify the project 
+## Follow instructions after this command and verify the project
 gcloud auth login
 ```
 
@@ -160,7 +164,7 @@ gcloud config set project bioconductor-rpci-280116
 
 Create a google bucket in a CRAN style manner, with `gsutil mb`. This
 bucket will be called `anvil-rstudio-bioconductor-test` since it's a
-**GLOBALLY** unique name. 
+**GLOBALLY** unique name.
 
 ```
 gsutil mb gs://anvil-rstudio-bioconductor-test/0.99/3.11/src/contrib/
